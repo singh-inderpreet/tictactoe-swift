@@ -9,9 +9,16 @@
 import SwiftUI
 
 struct BoxView: View {
-    @State  var showCircle: Bool = true
+    @Binding var showCircle: Bool
+    @State var isAlreadyPlayed: Bool = false
+    
+    let onClicked: () -> Void
+    
     var body: some View {
-        Button(action: {}) {
+        Button(action: {
+            self.showCircle.toggle()
+            self.onClicked()
+        }) {
             if showCircle {
                 Circle()
                     .frame(maxWidth: 50, maxHeight: 50)
@@ -36,6 +43,8 @@ struct BoxView: View {
 
 struct BoxView_Previews: PreviewProvider {
     static var previews: some View {
-        BoxView()
+        BoxView(showCircle: .constant(false)) {
+            
+        }
     }
 }
