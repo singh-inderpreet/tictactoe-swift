@@ -12,17 +12,7 @@ struct Game: View {
     @State var updatePlayerState: Bool = true
     @State var startTurnShowCircle = false // Player 1 == X, Player 2 == 0
     
-    @State var boxes: [[String: Any]] = [
-        [ "offsetY": 0.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 0.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 0.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 100.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 100.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 100.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 200.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 200.0, "isPlayed": false, "showCircle": false, "playedBy": "" ],
-        [ "offsetY": 200.0, "isPlayed": false, "showCircle": false, "playedBy": "" ]
-    ]
+    @ObservedObject var manageGame = ManageGame()
     
     var body: some View {
         VStack {
@@ -32,7 +22,10 @@ struct Game: View {
             
             ContentView(onContentClicked: {index in
                 self.updatePlayerState.toggle();
-            }, showCircle: false, startTurnShowCircle: $startTurnShowCircle, boxes: $boxes).frame(maxWidth: 300, maxHeight: 300)
+            }, showCircle: false,
+               startTurnShowCircle: $startTurnShowCircle,
+               boxes: .init(get: { self.manageGame.boxes }, set: { self.manageGame.boxes = $0})
+            ).frame(maxWidth: 300, maxHeight: 300)
             
             FooterView(updatePlayerState: $updatePlayerState)
                 .frame(maxWidth: .infinity, maxHeight: 60)

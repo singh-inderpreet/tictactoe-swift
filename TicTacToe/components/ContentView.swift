@@ -12,21 +12,7 @@ struct ContentView: View {
     let onContentClicked: (_ boxIndex: Int) -> Void
     @State var showCircle: Bool = false;
     @Binding var startTurnShowCircle: Bool;
-    @Binding var boxes: [[String: Any]]; //Declare binding for boxes
-    func bindingBool(for key: String, index: Int) -> Binding<Bool> { //Get/Set for boxes binding
-        return Binding(get: {
-            return self.boxes[index][key] as? Bool ?? false
-        }, set: {
-            self.boxes[index][key] = $0
-        })
-    }
-    func bindingString(for key: String, index: Int) -> Binding<String> { //Get/Set for boxes binding
-        return Binding(get: {
-            return self.boxes[index][key] as? String ?? ""
-        }, set: {
-            self.boxes[index][key] = $0
-        })
-    }
+    @Binding var boxes: [Box] //Declare binding for boxes
     
     let widthBox: CGFloat = 100;
     let heightBox: CGFloat = 100;
@@ -38,10 +24,26 @@ struct ContentView: View {
             ForEach(0 ..< self.totalHStacks, id: \.self) { index in
                 HStack(spacing: 0) {
                     ForEach(index * self.totalHStacks ..< (index * self.totalHStacks + self.totalBoxesInARow), id: \.self) { boxIndex in
-                        BoxView(showCircle: self.bindingBool(for: "showCircle", index: boxIndex), isPlayed: self.bindingBool(for: "isPlayed", index: boxIndex), startTurnShowCircle: self.$startTurnShowCircle, playedBy: self.bindingString(for: "playedBy", index: boxIndex)) {
+                        BoxView(
+                            showCircle: Binding(get: {
+                                return self.boxes[boxIndex].showCircle
+                            }, set: {
+                                self.boxes[boxIndex].showCircle = $0
+                            }),
+                            isPlayed: Binding(get: {
+                                return self.boxes[boxIndex].isPlayed
+                            }, set: {
+                                self.boxes[boxIndex].isPlayed = $0
+                            }),
+                            startTurnShowCircle: self.$startTurnShowCircle,
+                            playedBy: Binding(get: {
+                                return self.boxes[boxIndex].playedBy
+                            }, set: {
+                                self.boxes[boxIndex].playedBy = $0
+                            })) {
                             self.onContentClicked(boxIndex)
                         }.frame(width: self.widthBox ,height: self.heightBox)
-                            .offset(y: (CGFloat)(self.boxes[boxIndex]["offsetY"] as? Double ?? 0));
+                            .offset(y: (CGFloat)(self.boxes[boxIndex].offsetY));
                     }
                 }
             }
@@ -53,6 +55,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(onContentClicked: {_ in
             
-        }, showCircle: false, startTurnShowCircle: .constant(false) , boxes: .constant([["d": 0, "": false]]))
+        }, showCircle: false, startTurnShowCircle: .constant(false) , boxes: .constant([Box].init()))
     }
 }
